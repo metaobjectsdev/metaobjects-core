@@ -122,8 +122,8 @@ public class URIHelper implements URIConstants {
                     }
                 }
                 else {
-                    //new URL( url);
-                    // TODO: Not much you can do to check this
+                    // Unprefixed classpath resources cannot be validated without classloader context.
+                    // Validation occurs at load time when the resource is actually resolved.
                 }
             } catch (MalformedURLException e) {
                 throw new IllegalArgumentException( "Classpath resource has invalid syntax ["+url+"] "+e.toString(), e );

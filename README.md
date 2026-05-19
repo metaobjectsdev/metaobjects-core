@@ -141,6 +141,124 @@ Each module can be published independently to Maven Central, allowing users to i
 - **Clean Dependencies**: No circular dependencies
 - **OSGi Compatible**: Full bundle support with proper lifecycle management
 
+## 🔄 **Cross-Language Compatibility System**
+
+MetaObjects includes an **automated cross-language type compatibility validation system** that ensures type definitions remain consistent across Java, C#, TypeScript, and other target languages.
+
+### **How It Works**
+
+The compatibility system runs automatically during git deployment via pre-push hooks:
+
+1. **Type Definition Extraction** - Scans MetaData type registrations in Java code
+2. **Cross-Language Mapping** - Validates type mappings using `HelperRegistry.getLanguageType()`
+3. **Compatibility Verification** - Ensures each MetaField/MetaAttribute maps correctly to:
+   - **Java**: Proper Java types (Integer, Long, String, etc.)
+   - **TypeScript**: TypeScript types (number, string, boolean, etc.)
+   - **C#**: C# types (int, long, string, etc.)
+4. **Report Generation** - Produces compatibility report showing any mismatches
+
+### **Running Compatibility Checks Locally**
+
+**Before committing** - validate your changes don't break cross-language compatibility:
+
+```bash
+# Run cross-language compatibility validation
+cd metadata && mvn test -Dtest=CrossLanguageTypeCompatibilityTest
+
+# Output shows:
+# ✅ Java DataTypes: 21 types
+# ✅ TypeScript mappings: 9/21 compatible
+# ✅ C# mappings: 9/21 compatible
+# ✅ DATE serialization verified
+# 🚀 Safe to commit and deploy!
+```
+
+**Full test suite with compatibility checks:**
+
+```bash
+# Run all tests including compatibility validation
+cd metadata && mvn test
+
+# Verify entire module
+cd metadata && mvn verify
+```
+
+### **Type Mapping Rules**
+
+The system validates these key compatibility rules:
+- **Numeric Consolidation**: int/long/float/double → TypeScript `number`
+- **String Types**: Java String ↔ TypeScript string ↔ C# string
+- **Boolean Types**: Consistent across all languages
+- **Date/Time**: Java Date/LocalDateTime → TypeScript Date → C# DateTime
+- **Arrays**: Universal `@isArray` modifier maps to native array syntax in each language
+
+### **Integration with CI/CD**
+
+The compatibility checks are automatically triggered:
+- **Pre-push hook**: Validates before code reaches remote
+- **GitHub Actions**: Runs on all pull requests
+- **Release pipeline**: Required check before version tagging
+
+### **Setting Up Git Deploy Hooks**
+
+To enable automatic compatibility checking on push:
+
+```bash
+# Install the pre-push hook
+cp scripts/hooks/pre-push .git/hooks/pre-push
+chmod +x .git/hooks/pre-push
+
+# Or use Maven to install hooks
+mvn metaobjects:install-hooks
+```
+
+The pre-push hook performs:
+1. ✅ **Type Compatibility Check** - Validates Java → TypeScript/C# mappings
+2. ✅ **Schema Validation** - Ensures metadata schemas are in sync
+3. ✅ **API Surface Comparison** - Checks public API consistency across languages
+4. ✅ **Test Execution** - Runs compatibility-specific tests
+
+**Hook Output Example:**
+```
+🔍 Running cross-language compatibility checks...
+✅ Java type definitions: 47 types validated
+✅ TypeScript mappings: 47/47 compatible
+✅ C# mappings: 47/47 compatible
+✅ Schema checksums match
+✅ API surface compatible across all languages
+🎉 All compatibility checks passed!
+```
+
+### **Troubleshooting Compatibility Issues**
+
+If compatibility checks fail, you'll see detailed error reports:
+
+```
+❌ Compatibility check failed!
+
+Issue 1: Type mapping mismatch
+  Field: NumericField.SUBTYPE_NUMERIC
+  Java: Integer
+  TypeScript: number ✅
+  C#: int ✅
+  Problem: Java uses boxed type, should use int for consistency
+
+Issue 2: Missing TypeScript definition
+  Field: DecimalField.SUBTYPE_DECIMAL
+  Java: BigDecimal ✅
+  TypeScript: ❌ No mapping defined
+  C#: decimal ✅
+  Fix: Add mapping in HelperRegistry.getLanguageType()
+```
+
+**Common Fixes:**
+1. **Update CrossLanguageTypeCompatibilityTest.java** - Add new type mappings
+2. **Update HelperRegistry.java** in codegen-mustache - Add language type helpers
+3. **Check MetaDataProvider** - Ensure all types are registered in the registry
+4. **Re-run validation** - `cd metadata && mvn test -Dtest=CrossLanguageTypeCompatibilityTest`
+
+**Test Location:** `metadata/src/test/java/com/metaobjects/compatibility/CrossLanguageTypeCompatibilityTest.java`
+
 ## 🔧 **Building & Testing**
 
 ### **Build Requirements**
