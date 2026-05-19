@@ -159,16 +159,28 @@ The compatibility system runs automatically during git deployment via pre-push h
 
 ### **Running Compatibility Checks Locally**
 
+**Before committing** - validate your changes don't break cross-language compatibility:
+
 ```bash
-# Run full compatibility validation
-mvn verify -P check-compatibility
+# Run cross-language compatibility validation
+cd metadata && mvn test -Dtest=CrossLanguageTypeCompatibilityTest
 
-# Generate compatibility report
-mvn metaobjects:compatibility-report
+# Output shows:
+# ✅ Java DataTypes: 21 types
+# ✅ TypeScript mappings: 9/21 compatible
+# ✅ C# mappings: 9/21 compatible
+# ✅ DATE serialization verified
+# 🚀 Safe to commit and deploy!
+```
 
-# Check specific language target
-mvn metaobjects:check-typescript
-mvn metaobjects:check-csharp
+**Full test suite with compatibility checks:**
+
+```bash
+# Run all tests including compatibility validation
+cd metadata && mvn test
+
+# Verify entire module
+cd metadata && mvn verify
 ```
 
 ### **Type Mapping Rules**
@@ -240,10 +252,12 @@ Issue 2: Missing TypeScript definition
 ```
 
 **Common Fixes:**
-1. **Update HelperRegistry.java** - Add missing language mappings
-2. **Run code generation** - `mvn metaobjects:generate` to sync types
-3. **Check MetaDataProvider** - Ensure all types are registered
-4. **Validate metadata files** - Run `mvn metaobjects:validate-metadata`
+1. **Update CrossLanguageTypeCompatibilityTest.java** - Add new type mappings
+2. **Update HelperRegistry.java** in codegen-mustache - Add language type helpers
+3. **Check MetaDataProvider** - Ensure all types are registered in the registry
+4. **Re-run validation** - `cd metadata && mvn test -Dtest=CrossLanguageTypeCompatibilityTest`
+
+**Test Location:** `metadata/src/test/java/com/metaobjects/compatibility/CrossLanguageTypeCompatibilityTest.java`
 
 ## 🔧 **Building & Testing**
 
