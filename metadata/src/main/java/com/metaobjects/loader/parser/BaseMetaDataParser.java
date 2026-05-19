@@ -414,9 +414,19 @@ public abstract class BaseMetaDataParser {
         return MetaDataUtil.expandPackageForMetaDataRef(basePackage, superName);
     }
 
-    /** Determine if the packageName should change based on the parent metadata */
+    /**
+     * Determines if child metadata should inherit parent's package.
+     * Package inheritance is disabled when:
+     * - No parent exists
+     * - Parent is a MetaDataLoader (loaders don't propagate packages to loaded metadata)
+     * - Parent has no package
+     * - Parent package matches child package (already aligned)
+     *
+     * @param parent Parent metadata that may provide a package
+     * @param packageName Child's current package name
+     * @return true if parent package should override child package
+     */
     protected boolean shouldUseParentPackage( MetaData parent, String packageName ) {
-        // TODO:  This may need to be refactored
         return parent != null
                 && !(parent instanceof MetaDataLoader)
                 && !parent.getPackage().isEmpty()

@@ -107,7 +107,7 @@ public class MetaDataLoader extends MetaData implements LoaderConfigurable {
         }
     }
 
-    // TODO:  Allow for custom configurations for overloaded MetaDataLoaders
+    // LoaderOptions supports extension via subclassing with generic setter pattern
     private final LoaderOptions loaderOptions;
     
     // v6.0.0: Replace TypesConfig with unified registry

@@ -926,18 +926,22 @@ public class MetaData implements Cloneable, Serializable {
     }
 
     /**
-     * Whether to delete the MetaData if a new one is added
+     * Determines if this MetaData instance should be deleted when a new one with the same name is added.
+     * Subclasses can override this to control replacement behavior.
+     *
+     * @return true if this instance should be replaced, false to keep existing
+     */
+    protected boolean shouldDeleteOnAdd() {
+        return false;  // Most MetaData types retain existing instances by default
+    }
+
+    /**
+     * Whether to delete the MetaData if a new one is added (delegates to polymorphic method)
      * @param d MetaData to check
      * @return true if should delete
      */
     protected boolean deleteOnAdd( MetaData d) {
-
-        // TODO: Change these rules to be driven from a MetaData method that is overrideable
-
-        return d instanceof MetaAttribute;
-                // || d instanceof MetaField
-                //|| d instanceof MetaValidator
-                //|| d instanceof MetaView;
+        return d.shouldDeleteOnAdd();
     }
 
     /**

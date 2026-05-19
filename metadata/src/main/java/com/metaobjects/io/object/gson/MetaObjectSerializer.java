@@ -73,8 +73,8 @@ public class MetaObjectSerializer implements JsonSerializer<Object> {
                 jsonObject.addProperty(name, mf.getInt(vo));
                 break;
 
-            case DATE:      // TODO: should we do somethinf custom here?
-                jsonObject.add(name, context.serialize(vo));
+            case DATE:
+                jsonObject.add(name, context.serialize(mf.getObject(vo)));
                 break;
 
             case LONG:

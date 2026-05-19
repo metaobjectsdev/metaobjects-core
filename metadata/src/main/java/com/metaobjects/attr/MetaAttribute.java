@@ -106,6 +106,17 @@ public class MetaAttribute<T> extends MetaData implements DataTypeAware<T>, Meta
                Boolean.parseBoolean(getMetaAttr(ATTR_IS_ARRAY).getValueAsString());
     }
 
+    /**
+     * Attributes support replacement when a new attribute with the same name is added.
+     * This allows attribute values to be updated/overridden in metadata hierarchies.
+     *
+     * @return true - attributes are replaceable by default
+     */
+    @Override
+    protected boolean shouldDeleteOnAdd() {
+        return true;
+    }
+
     // ========== ENHANCED ATTRIBUTE-SPECIFIC METHODS ==========
     
     
