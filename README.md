@@ -1,3 +1,5 @@
+> **Superseded.** This repository is archived. Development continues at https://github.com/metaobjectsdev/metaobjects
+
 # MetaObjects
 
 MetaObjects is a comprehensive suite of tools for **metadata-driven development**, providing sophisticated control over applications beyond traditional model-driven development techniques. Version 6.3.0+ features a **completely modular architecture** with revolutionary **fluent constraint system** designed for modern software development practices.
